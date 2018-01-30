@@ -2,9 +2,23 @@ var loliData = require('../data/loli-data.json');
 
 module.exports.lolisGetAll = function(req, res) {
   console.log("GET the lolis");
+  console.log(req.query);
+
+  var offset = 0;
+  var count = 5;
+
+  if (req.query && req.query.offset) {
+    offset = parseInt(req.query.offset, 10);
+  }
+
+  if (req.query && req.query.count) {
+    count = parseInt(req.query.count, 10);
+  }
+  var returnData = loliData.slice(offset,offset+count);
+
   res
     .status(200)
-    .json(loliData);
+    .json(returnData);
 };
 
 module.exports.lolisGetOne = function(req, res) {
