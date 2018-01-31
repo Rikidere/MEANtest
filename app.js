@@ -15,7 +15,9 @@ app.use(function(req, res, next) {
 
 app.use(express.static(path.join(__dirname, 'public_html')));
 
-app.use(bodyParser.urlencoded({ extended : false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 
 app.use('/api', routes);
 

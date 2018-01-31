@@ -1,5 +1,4 @@
-[
-  {
+[{
     name: "MongoDB",
     role: "Database"
   },

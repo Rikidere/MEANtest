@@ -3,9 +3,9 @@ var dburl = 'mongodb://localhost:27017/mean-loli';
 
 var _connection = null;
 
-var open = function () {
-  MongoClient.connect(dburl, function (err, db) {
-    if(err){
+var open = function() {
+  MongoClient.connect(dburl, function(err, db) {
+    if (err) {
       console.log("DB connection failed");
       return;
     }
@@ -15,15 +15,15 @@ var open = function () {
   // set _connection
 };
 
-var getConnection = function () {
+var getConnection = function() {
   return _connection;
 };
 
-var getDb = function () {
+var getDb = function() {
   return _connection.db('mean-loli');
 };
 module.exports = {
-  open : open,
-  getConnection : getConnection,
-  getDb : getDb
+  open: open,
+  getConnection: getConnection,
+  getDb: getDb
 };

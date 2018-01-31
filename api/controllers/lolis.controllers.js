@@ -57,8 +57,10 @@ module.exports.lolisAddOne = function(req, res) {
   console.log("POST new loli");
 
   if (req.body && req.body.name && req.body.age) {
-    collection.findOne({name : req.body.name}, function (err, doc) {
-      if(!doc){
+    collection.findOne({
+      name: req.body.name
+    }, function(err, doc) {
+      if (!doc) {
         console.log(req.body.name);
         newLoli = req.body;
         newLoli.age = parseInt(req.body.age, 10);
@@ -70,17 +72,15 @@ module.exports.lolisAddOne = function(req, res) {
               .status(201)
               .json(response.ops);
           });
-        } else {
-          console.log("Duplicate");
-          res
-            .status(400)
-            .json({
-              message: "Duplicate"
-            });
-        }
+      } else {
+        console.log("Duplicate");
+        res
+          .status(400)
+          .json({
+            message: "Duplicate"
+          });
+      }
     });
-
-
 
   } else {
     console.log("Data missing from body");
@@ -90,6 +90,5 @@ module.exports.lolisAddOne = function(req, res) {
         message: "Required data missing from body"
       });
   }
-
 
 };
