@@ -6,19 +6,17 @@ var ctrlComments = require('../controllers/comments.controllers.js');
 
 router
   .route('/lolis')
-  .get(ctrlLolis.lolisGetAll);
+  .get(ctrlLolis.lolisGetAll)
+  .post(ctrlLolis.lolisAddOne);
 
 router
   .route('/lolis/:loliId')
   .get(ctrlLolis.lolisGetOne);
 
 router
-  .route('/lolis/new')
-  .post(ctrlLolis.lolisAddOne);
-
-router
   .route('/lolis/:loliId/comments')
-  .get(ctrlComments.commentsGetAll);
+  .get(ctrlComments.commentsGetAll)
+  .post(ctrlComments.commentsAddOne);
 
 router
   .route('/lolis/:loliId/comments/:commentId')

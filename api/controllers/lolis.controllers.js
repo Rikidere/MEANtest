@@ -5,6 +5,7 @@ module.exports.lolisGetAll = function(req, res) {
 
   var offset = 0;
   var count = 5;
+  var maxCount = 10;
 
   if (req.query && req.query.offset) {
     offset = parseInt(req.query.offset, 10);
@@ -19,6 +20,15 @@ module.exports.lolisGetAll = function(req, res) {
       .status(400)
       .json({
         message: "querystring count and offset should be numbers"
+      });
+    return;
+  }
+
+  if (count > maxCount) {
+    res
+      .status(400)
+      .json({
+        message: "Count limit of 10 exceeded"
       });
     return;
   }
@@ -49,53 +59,57 @@ module.exports.lolisGetOne = function(req, res) {
   Loli
     .findById(loliId)
     .exec(function(err, doc) {
-      res
-        .status(200)
-        .json(doc);
+      var response = {
+        status : 200,
+        message : doc
+      };
+      if (err) {
+        console.log("Error finding loli");
+        response.status = 500;
+        response.message = err;
+        } else if(!doc) {
+          response.status = 404;
+          response.message = "Loli ID not found";
+        }
+        res
+          .status(response.status)
+          .json(response.message);
     });
 
 };
 
-module.exports.lolisAddOne = function(req, res) {
-  var db = dbconn.getDb();
-  var collection = db.collection('lolis');
-  var newLoli;
-
-  console.log("POST new loli");
-
-  if (req.body && req.body.name && req.body.age) {
-    collection.findOne({
-      name: req.body.name
-    }, function(err, doc) {
-      if (!doc) {
-        console.log(req.body.name);
-        newLoli = req.body;
-        newLoli.age = parseInt(req.body.age, 10);
-        collection
-          .insertOne(newLoli, function(err, response) {
-            console.log(response);
-            console.log(response.ops);
-            res
-              .status(201)
-              .json(response.ops);
-          });
-      } else {
-        console.log("Duplicate");
-        res
-          .status(400)
-          .json({
-            message: "Duplicate"
-          });
-      }
-    });
-
+var _splitArray = function(input) {
+  var output;
+  var splitter = ";";
+  if (input && input.length > 0){
+    splitter = input.indexOf(" ") !== -1 ? " " : splitter;
+    output = input.split(splitter);
   } else {
-    console.log("Data missing from body");
-    res
-      .status(400)
-      .json({
-        message: "Required data missing from body"
-      });
+    output = [];
   }
+  return output;
+};
+
+module.exports.lolisAddOne = function(req, res) {
+
+  Loli
+  .create({
+    name : req.body.name,
+    age : parseInt(req.body.age, 10),
+    description : req.body.description,
+    photos : _splitArray(req.body.photos)
+  }, function (err, loli) {
+    if(err) {
+      console.log("Error creating loli");
+      res
+        .status(400)
+        .json(err);
+      } else {
+        console.log("Loli created", loli);
+        res
+          .status(201)
+          .json(loli);
+      }
+  });
 
 };
