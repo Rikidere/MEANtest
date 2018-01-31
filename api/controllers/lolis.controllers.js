@@ -1,6 +1,12 @@
+var dbconn = require('../data/dbconnection.js');
 var loliData = require('../data/loli-data.json');
 
 module.exports.lolisGetAll = function(req, res) {
+
+  var db = dbconn.get();
+
+  console.log("db", db);
+
   console.log("GET the lolis");
   console.log(req.query);
 
