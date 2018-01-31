@@ -22,7 +22,7 @@ module.exports.lolisGetAll = function(req, res) {
     .find()
     .skip(offset)
     .limit(count)
-    .toArray(function (err, docs) {
+    .toArray(function(err, docs) {
       console.log("Found lolis", docs);
       res
         .status(200)
@@ -40,8 +40,8 @@ module.exports.lolisGetOne = function(req, res) {
 
   collection
     .findOne({
-      _id : ObjectId(loliId)
-    }, function (err, doc) {
+      _id: ObjectId(loliId)
+    }, function(err, doc) {
       res
         .status(200)
         .json(doc);
@@ -50,9 +50,46 @@ module.exports.lolisGetOne = function(req, res) {
 };
 
 module.exports.lolisAddOne = function(req, res) {
+  var db = dbconn.getDb();
+  var collection = db.collection('lolis');
+  var newLoli;
+
   console.log("POST new loli");
-  console.log(req.body);
-  res
-    .status(200)
-    .json(req.body);
+
+  if (req.body && req.body.name && req.body.age) {
+    collection.findOne({name : req.body.name}, function (err, doc) {
+      if(!doc){
+        console.log(req.body.name);
+        newLoli = req.body;
+        newLoli.age = parseInt(req.body.age, 10);
+        collection
+          .insertOne(newLoli, function(err, response) {
+            console.log(response);
+            console.log(response.ops);
+            res
+              .status(201)
+              .json(response.ops);
+          });
+        } else {
+          console.log("Duplicate");
+          res
+            .status(400)
+            .json({
+              message: "Duplicate"
+            });
+        }
+    });
+
+
+
+  } else {
+    console.log("Data missing from body");
+    res
+      .status(400)
+      .json({
+        message: "Required data missing from body"
+      });
+  }
+
+
 };
