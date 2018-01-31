@@ -15,11 +15,15 @@ var open = function () {
   // set _connection
 };
 
-var get = function () {
+var getConnection = function () {
   return _connection;
 };
 
+var getDb = function () {
+  return _connection.db('mean-loli');
+};
 module.exports = {
   open : open,
-  get : get
+  getConnection : getConnection,
+  getDb : getDb
 };
