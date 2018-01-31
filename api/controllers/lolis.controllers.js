@@ -1,11 +1,7 @@
-var dbconn = require('../data/dbconnection.js');
-var ObjectId = require('mongodb').ObjectId;
-var loliData = require('../data/loli-data.json');
+var mongoose = require('mongoose');
+var Loli = mongoose.model('Loli');
 
 module.exports.lolisGetAll = function(req, res) {
-
-  var db = dbconn.getDb();
-  var collection = db.collection('lolis');
 
   var offset = 0;
   var count = 5;
@@ -18,30 +14,41 @@ module.exports.lolisGetAll = function(req, res) {
     count = parseInt(req.query.count, 10);
   }
 
-  collection
+  if (isNaN(offset) || isNaN(count)) {
+    res
+      .status(400)
+      .json({
+        message: "querystring count and offset should be numbers"
+      });
+    return;
+  }
+
+  Loli
     .find()
     .skip(offset)
     .limit(count)
-    .toArray(function(err, docs) {
-      console.log("Found lolis", docs);
-      res
-        .status(200)
-        .json(docs);
+    .exec(function(err, lolis) {
+      if (err) {
+        console.log("Error finding lolis");
+        res
+          .status(500)
+          .json(err);
+      } else {
+        console.log("Found lolis", lolis.length);
+        res
+          .json(lolis);
+      }
     });
 
 };
 
 module.exports.lolisGetOne = function(req, res) {
-  var db = dbconn.getDb();
-  var collection = db.collection('lolis');
-
   var loliId = req.params.loliId;
   console.log("GET the loliId", loliId);
 
-  collection
-    .findOne({
-      _id: ObjectId(loliId)
-    }, function(err, doc) {
+  Loli
+    .findById(loliId)
+    .exec(function(err, doc) {
       res
         .status(200)
         .json(doc);
