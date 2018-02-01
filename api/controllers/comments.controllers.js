@@ -160,3 +160,58 @@ module.exports.commentsUpdateOne = function(req, res) {
       }
     });
 };
+
+module.exports.commentsDeleteOne = function(req, res) {
+  var loliId = req.params.loliId;
+  var commentId = req.params.commentId;
+  console.log("GET the loliId", loliId);
+  console.log("GET the commentId", commentId);
+
+  Loli
+    .findById(loliId)
+    .select('comments')
+    .exec(function(err, loli) {
+      var thisComment;
+      var response = {
+        status: 200,
+        message: {}
+      };
+      if (err) {
+        console.log("Error finding loli");
+        response.status = 500;
+        response.message = err;
+      } else if (!loli) {
+        console.log("Loli not found");
+        response.status = 404;
+        response.message = {
+          message: "Loli Id not found " + id
+        };
+      } else {
+        thisComment = loli.comments.id(commentId);
+        if (!thisComment) {
+          response.status = 404;
+          response.message = {
+            message: "Comment Id not found"
+          };
+        }
+      }
+      if (response.status != 200) {
+        res
+          .status(response.status)
+          .json(response.message);
+      } else {
+        loli.comments.id(commentId).remove();
+        loli.save(function(err, loliUpdated) {
+          if (err) {
+            res
+              .status(500)
+              .json(err);
+          } else {
+            res
+              .status(204)
+              .json();
+          }
+        });
+      }
+    });
+};

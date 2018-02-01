@@ -157,3 +157,22 @@ module.exports.lolisUpdateOne = function(req, res) {
       }
     });
 };
+
+module.exports.lolisDeleteOne = function(req, res) {
+  var loliId = req.params.loliId;
+
+  Loli
+    .findByIdAndRemove(loliId)
+    .exec(function(err, loli) {
+      if (err) {
+        res
+          .status(404)
+          .json(err);
+      } else {
+        console.log("Loli deleted, id:", loliId);
+        res
+          .status(204)
+          .json();
+      }
+    });
+};

@@ -13,7 +13,8 @@ router
 router
   .route('/lolis/:loliId')
   .get(ctrlLolis.lolisGetOne)
-  .put(ctrlLolis.lolisUpdateOne);
+  .put(ctrlLolis.lolisUpdateOne)
+  .delete(ctrlLolis.lolisDeleteOne);
 
 //comment routes
 router
@@ -24,7 +25,8 @@ router
 router
   .route('/lolis/:loliId/comments/:commentId')
   .get(ctrlComments.commentsGetOne)
-  .put(ctrlComments.commentsUpdateOne);
+  .put(ctrlComments.commentsUpdateOne)
+  .delete(ctrlComments.commentsDeleteOne);
 
 
 module.exports = router;
