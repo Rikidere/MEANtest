@@ -60,20 +60,20 @@ module.exports.lolisGetOne = function(req, res) {
     .findById(loliId)
     .exec(function(err, doc) {
       var response = {
-        status : 200,
-        message : doc
+        status: 200,
+        message: doc
       };
       if (err) {
         console.log("Error finding loli");
         response.status = 500;
         response.message = err;
-        } else if(!doc) {
-          response.status = 404;
-          response.message = "Loli ID not found";
-        }
-        res
-          .status(response.status)
-          .json(response.message);
+      } else if (!doc) {
+        response.status = 404;
+        response.message = "Loli ID not found";
+      }
+      res
+        .status(response.status)
+        .json(response.message);
     });
 
 };
@@ -81,7 +81,7 @@ module.exports.lolisGetOne = function(req, res) {
 var _splitArray = function(input) {
   var output;
   var splitter = ";";
-  if (input && input.length > 0){
+  if (input && input.length > 0) {
     splitter = input.indexOf(" ") !== -1 ? " " : splitter;
     output = input.split(splitter);
   } else {
@@ -93,23 +93,67 @@ var _splitArray = function(input) {
 module.exports.lolisAddOne = function(req, res) {
 
   Loli
-  .create({
-    name : req.body.name,
-    age : parseInt(req.body.age, 10),
-    description : req.body.description,
-    photos : _splitArray(req.body.photos)
-  }, function (err, loli) {
-    if(err) {
-      console.log("Error creating loli");
-      res
-        .status(400)
-        .json(err);
+    .create({
+      name: req.body.name,
+      age: parseInt(req.body.age, 10),
+      description: req.body.description,
+      photos: _splitArray(req.body.photos)
+    }, function(err, loli) {
+      if (err) {
+        console.log("Error creating loli");
+        res
+          .status(400)
+          .json(err);
       } else {
         console.log("Loli created", loli);
         res
           .status(201)
           .json(loli);
       }
-  });
+    });
 
+};
+
+module.exports.lolisUpdateOne = function(req, res) {
+  var loliId = req.params.loliId;
+  console.log("GET the loliId", loliId);
+
+  Loli
+    .findById(loliId)
+    .select("-comments")
+    .exec(function(err, doc) {
+      var response = {
+        status: 200,
+        message: doc
+      };
+      if (err) {
+        console.log("Error finding loli");
+        response.status = 500;
+        response.message = err;
+      } else if (!doc) {
+        response.status = 404;
+        response.message = "Loli ID not found";
+      }
+      if (response.status != 200) {
+        res
+          .status(response.status)
+          .json(response.message);
+      } else {
+        doc.name = req.body.name;
+        doc.age = parseInt(req.body.age, 10);
+        doc.description = req.body.description;
+        doc.photos = _splitArray(req.body.photos);
+        doc.save(function(err, loliUpdated) {
+          if (err) {
+            res
+              .status(500)
+              .json(err);
+          } else {
+            res
+              .status(204)
+              .json();
+          }
+        });
+      }
+    });
 };
